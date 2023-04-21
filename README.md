@@ -6,7 +6,7 @@ This repository is directly forked and inspired from [Big Data Europe repositori
 
 Docker Compose containing:
 * [Apache Spark](https://spark.apache.org/) cluster running one Spark Master and multiple Spark workers
-* Hadoop HDFS cluster
+* [Hadoop](https://hadoop.apache.org/) HDFS cluster
 * The [Apache Hive ™](https://hive.apache.org/) distributed, fault-tolerant data warehouse system.
 
 ## Running Docker containers 
