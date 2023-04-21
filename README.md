@@ -1,74 +1,59 @@
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/big-data-europe/Lobby)
-[![Build Status](https://travis-ci.org/big-data-europe/docker-spark.svg?branch=master)](https://travis-ci.org/big-data-europe/docker-spark)
-[![Twitter](https://img.shields.io/twitter/follow/BigData_Europe.svg?style=social)](https://twitter.com/BigData_Europe)
-# Spark docker
 
-Docker images to:
+# Introduction to Docker Big Data Playground
+
+This repository is directly forked and inspired from [Big Data Europe repositories](https://github.com/big-data-europe)
+
+Docker Compose containing:
 * Setup a standalone [Apache Spark](https://spark.apache.org/) cluster running one Spark Master and multiple Spark workers
-* Build Spark applications in Java, Scala or Python to run on a Spark cluster
+* Setup a standalone Hadoop HDFS cluster
 
-<details open>
-<summary>Currently supported versions:</summary>
+## Running Docker containers 
 
-* Spark 3.3.0 for Hadoop 3.3 with OpenJDK 8 and Scala 2.12
-* Spark 3.2.1 for Hadoop 3.2 with OpenJDK 8 and Scala 2.12
-* Spark 3.2.0 for Hadoop 3.2 with OpenJDK 8 and Scala 2.12
-* Spark 3.1.2 for Hadoop 3.2 with OpenJDK 8 and Scala 2.12
-* Spark 3.1.1 for Hadoop 3.2 with OpenJDK 8 and Scala 2.12
-* Spark 3.1.1 for Hadoop 3.2 with OpenJDK 11 and Scala 2.12
-* Spark 3.0.2 for Hadoop 3.2 with OpenJDK 8 and Scala 2.12
-* Spark 3.0.1 for Hadoop 3.2 with OpenJDK 8 and Scala 2.12
-* Spark 3.0.0 for Hadoop 3.2 with OpenJDK 11 and Scala 2.12
-* Spark 3.0.0 for Hadoop 3.2 with OpenJDK 8 and Scala 2.12
-* Spark 2.4.5 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.4.4 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.4.3 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.4.1 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.4.0 for Hadoop 2.8 with OpenJDK 8 and Scala 2.12
-* Spark 2.4.0 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.3.2 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.3.1 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.3.1 for Hadoop 2.8 with OpenJDK 8
-* Spark 2.3.0 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.2.2 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.2.1 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.2.0 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.1.3 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.1.2 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.1.1 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.1.0 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.0.2 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.0.1 for Hadoop 2.7+ with OpenJDK 8
-* Spark 2.0.0 for Hadoop 2.7+ with Hive support and OpenJDK 8
-* Spark 2.0.0 for Hadoop 2.7+ with Hive support and OpenJDK 7
-* Spark 1.6.2 for Hadoop 2.6 and later
-* Spark 1.5.1 for Hadoop 2.6 and later
+To start the docker big data playground repository:
 
-</details>
+    docker-compose up
 
-## Using Docker Compose
+### Example load data into HDFS
 
-Add the following services to your `docker-compose.yml` to integrate a Spark master and Spark worker in [your BDE pipeline](https://github.com/big-data-europe/app-bde-pipeline):
+1. Find the container ID of the namenode:
+
+    docker ps |grep namenode
+
+2. Copy a data file into the container:
+
+    docker cp data/breweries.csv 1df7a57164de:breweries.csv
+
+3. Log into the container and put the file into HDFS:
+
+    docker exec -it 1df7a57164de bash
+    hdfs dfs -mkdir /data
+    hdfs dfs -mkdir /data/openbeer
+    hdfs dfs -mkdir /data/openbeer/breweries
+    hdfs dfs -put breweries.csv /data/openbeer/breweries/breweries.csv
+
+### Example query HDFS from Spark
+
+1. Go to http://localhost:8080 on your Docker host (laptop). Here you find the spark:// master address like:
+  
+    Spark Master at spark://5d35a2ea42ef:7077
+
+2. Find the container ID of teh spark master container, and connect to the spark scala shell:
+
+    docker ps |grep spark
+    docker exec -it 453dd19695b0 bash
+    spark/bin/spark-shell --master spark://5d35a2ea42ef:7077
+
+3. Inside the Spark scala shell execute this commands:
+
+    val df = spark.read.csv("hdfs://namenode:9000/data/openbeer/breweries/breweries.csv")
+    df.show()
+
+## Expanding Docker Compose
+Add the following services to your `docker-compose.yml` to increase spark worker nodes:
 ```yml
 version: '3'
 services:
-  spark-master:
-    image: bde2020/spark-master:3.3.0-hadoop3.3
-    container_name: spark-master
-    ports:
-      - "8080:8080"
-      - "7077:7077"
-    environment:
-      - INIT_DAEMON_STEP=setup_spark
-  spark-worker-1:
-    image: bde2020/spark-worker:3.3.0-hadoop3.3
-    container_name: spark-worker-1
-    depends_on:
-      - spark-master
-    ports:
-      - "8081:8081"
-    environment:
-      - "SPARK_MASTER=spark://spark-master:7077"
   spark-worker-2:
     image: bde2020/spark-worker:3.3.0-hadoop3.3
     container_name: spark-worker-2
@@ -78,36 +63,10 @@ services:
       - "8082:8081"
     environment:
       - "SPARK_MASTER=spark://spark-master:7077"
-  spark-history-server:
-      image: bde2020/spark-history-server:3.3.0-hadoop3.3
-      container_name: spark-history-server
-      depends_on:
-        - spark-master
-      ports:
-        - "18081:18081"
-      volumes:
-        - /tmp/spark-events-local:/tmp/spark-events
 ```
-Make sure to fill in the `INIT_DAEMON_STEP` as configured in your pipeline.
 
-## Running Docker containers without the init daemon
-### Spark Master
-To start a Spark master:
 
-    docker run --name spark-master -h spark-master -d bde2020/spark-master:3.3.0-hadoop3.3
-
-### Spark Worker
-To start a Spark worker:
-
-    docker run --name spark-worker-1 --link spark-master:spark-master -d bde2020/spark-worker:3.3.0-hadoop3.3
-
-## Launch a Spark application
-Building and running your Spark application on top of the Spark cluster is as simple as extending a template Docker image. Check the template's README for further documentation.
-* [Maven template](template/maven)
-* [Python template](template/python)
-* [Sbt template](template/sbt)
-
-## Kubernetes deployment
+## Spark Kubernetes deployment
 The BDE Spark images can also be used in a Kubernetes enviroment.
 
 To deploy a simple Spark standalone cluster issue

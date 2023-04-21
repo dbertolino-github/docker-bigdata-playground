@@ -36,7 +36,17 @@ services:
       - "8081:8081"
     environment:
       - "SPARK_MASTER=spark://spark-master:7077"
-
+  
+  spark-history-server:
+      image: bde2020/spark-history-server:3.3.0-hadoop3.3
+      container_name: spark-history-server
+      depends_on:
+        - spark-master
+      ports:
+        - "18081:18081"
+      volumes:
+        - /tmp/spark-events-local:/tmp/spark-events
+    
 
   ##########
   # HADOOP #
