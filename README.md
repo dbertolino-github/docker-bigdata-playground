@@ -16,15 +16,15 @@ To start the docker big data playground repository:
 
 ### Example load data into HDFS
 
-1. Find the container ID of the namenode:
+Find the container ID of the namenode:
 
     docker ps |grep namenode
 
-2. Copy a data file into the container:
+Copy a data file into the container:
 
     docker cp data/breweries.csv 1df7a57164de:breweries.csv
 
-3. Log into the container and put the file into HDFS:
+Log into the container and put the file into HDFS:
 
     docker exec -it 1df7a57164de bash
     hdfs dfs -mkdir /data
@@ -34,17 +34,17 @@ To start the docker big data playground repository:
 
 ### Example query HDFS from Spark
 
-1. Go to http://localhost:8080 on your Docker host (laptop). Here you find the spark:// master address like:
+Go to http://localhost:8080 on your Docker host (laptop). Here you find the spark:// master address like:
   
     Spark Master at spark://5d35a2ea42ef:7077
 
-2. Find the container ID of teh spark master container, and connect to the spark scala shell:
+Find the container ID of teh spark master container, and connect to the spark scala shell:
 
     docker ps |grep spark
     docker exec -it 453dd19695b0 bash
     spark/bin/spark-shell --master spark://5d35a2ea42ef:7077
 
-3. Inside the Spark scala shell execute this commands:
+Inside the Spark scala shell execute this commands:
 
     val df = spark.read.csv("hdfs://namenode:9000/data/openbeer/breweries/breweries.csv")
     df.show()
