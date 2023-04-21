@@ -5,8 +5,9 @@
 This repository is directly forked and inspired from [Big Data Europe repositories](https://github.com/big-data-europe)
 
 Docker Compose containing:
-* Setup a standalone [Apache Spark](https://spark.apache.org/) cluster running one Spark Master and multiple Spark workers
-* Setup a standalone Hadoop HDFS cluster
+* [Apache Spark](https://spark.apache.org/) cluster running one Spark Master and multiple Spark workers
+* Hadoop HDFS cluster
+* The [Apache Hive ™](https://hive.apache.org/) distributed, fault-tolerant data warehouse system.
 
 ## Running Docker containers 
 
@@ -16,17 +17,13 @@ To start the docker big data playground repository:
 
 ### Example load data into HDFS
 
-Find the container ID of the namenode:
-
-    docker ps |grep namenode
-
 Copy a data file into the container:
 
-    docker cp data/breweries.csv 1df7a57164de:breweries.csv
+    docker cp data/breweries.csv namenode:breweries.csv
 
 Log into the container and put the file into HDFS:
 
-    docker exec -it 1df7a57164de bash
+    $ docker-compose exec spark-master bash
     hdfs dfs -mkdir /data
     hdfs dfs -mkdir /data/openbeer
     hdfs dfs -mkdir /data/openbeer/breweries
@@ -38,16 +35,45 @@ Go to http://localhost:8080 on your Docker host (laptop). Here you find the spar
   
     Spark Master at spark://5d35a2ea42ef:7077
 
-Find the container ID of teh spark master container, and connect to the spark scala shell:
+Find the container ID of the spark master container, and connect to the spark scala shell:
 
-    docker ps |grep spark
-    docker exec -it 453dd19695b0 bash
-    spark/bin/spark-shell --master spark://5d35a2ea42ef:7077
+    $ docker-compose exec spark-master bash
+    # spark/bin/spark-shell --master spark://5d35a2ea42ef:7077
 
 Inside the Spark scala shell execute this commands:
 
     val df = spark.read.csv("hdfs://namenode:9000/data/openbeer/breweries/breweries.csv")
     df.show()
+
+### Example query from Hive
+
+Load Data into
+  
+    $ docker-compose exec hive-server bash
+    # /opt/hive/bin/beeline -u jdbc:hive2://localhost:10000
+    > show databases;
+
+    +----------------+
+    | database_name  |
+    +----------------+
+    | default        |
+    +----------------+
+    1 row selected (0.335 seconds)
+
+    > create database openbeer;
+    > use openbeer;
+    > CREATE EXTERNAL TABLE IF NOT EXISTS breweries(
+          NUM INT,
+          NAME CHAR(100),
+          CITY CHAR(100),
+          STATE CHAR(100),
+          ID INT )
+      ROW FORMAT DELIMITED
+      FIELDS TERMINATED BY ','
+      STORED AS TEXTFILE
+      location '/data/openbeer/breweries';
+
+    > sleect * from breweries limit 10;
 
 ## Expanding Docker Compose
 Add the following services to your `docker-compose.yml` to increase spark worker nodes:
