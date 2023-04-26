@@ -114,10 +114,9 @@ services:
     env_file:
       - ./hadoop.env
   
-  ##########
+  ########
   # HIVE #
-  ##########
-
+  ########
   hive-server:
     networks:
       - playground
@@ -146,4 +145,16 @@ services:
     networks:
       - playground
     image: bde2020/hive-metastore-postgresql:2.3.0
+
+  ####################
+  # Jupyter Notebook #
+  ####################
+  jupyter-notebooks:
+      build: ./jupyter/
+      ports:
+        - "8888:8888"
+      volumes:
+        - ./data:/home/jovyan/data
+        - ./jupyter/notebooks:/home/jovyan/notebooks
+      container_name: jupyter-notebooks
 

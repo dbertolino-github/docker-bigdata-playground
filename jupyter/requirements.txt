@@ -1,0 +1,4 @@
+pandas==2.0.1
+numpy==1.24.3
+pyspark==3.4.0
+jupyter_contrib_nbextensions==0.7.0
