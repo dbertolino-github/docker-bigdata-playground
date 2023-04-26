@@ -8,6 +8,7 @@ Docker Compose containing:
 * [Apache Spark](https://spark.apache.org/) cluster running one Spark Master and multiple Spark workers
 * [Hadoop](https://hadoop.apache.org/) HDFS cluster
 * The [Apache Hive ™](https://hive.apache.org/) distributed, fault-tolerant data warehouse system.
+* The [Jupyter Lab service](https://jupyter.org/) to test PySpark jobs
 
 ## Running Docker containers 
 
