@@ -22,6 +22,8 @@ services:
     ports:
       - "8080:8080"
       - "7077:7077"
+    volumes:
+        - ./data:/home/jovyan/data
     environment:
       - INIT_DAEMON_STEP=setup_spark
 
@@ -30,6 +32,8 @@ services:
       - playground
     image: bde2020/spark-worker:3.3.0-hadoop3.3
     container_name: spark-worker-1
+    volumes:
+        - ./data:/home/jovyan/data
     depends_on:
       - spark-master
     ports:
@@ -150,6 +154,8 @@ services:
   # Jupyter Notebook #
   ####################
   jupyter-notebooks:
+      networks:
+        - playground
       build: ./jupyter/
       ports:
         - "8888:8888"

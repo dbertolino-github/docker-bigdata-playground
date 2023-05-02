@@ -1,4 +1,4 @@
-FROM jupyter/scipy-notebook:python-3.10
+FROM jupyter/pyspark-notebook:spark-3.3.0
 
 LABEL mantainer="Dario Bertolino"
 
