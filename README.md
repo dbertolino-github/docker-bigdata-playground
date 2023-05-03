@@ -76,6 +76,22 @@ Load Data into
 
     > sleect * from breweries limit 10;
 
+### Run example Big Data Pipeline in Jupyter Notebook
+
+Connect to Jupyter Hub by accessing container logs:
+
+    $ docker logs jupyter-notebooks
+
+    > 2023-05-03 17:29:39     To access the server, open this file in a browser:
+    > 2023-05-03 17:29:39         file:///home/jovyan/.local/share/jupyter/runtime/jpserver-7-open.html
+    > 2023-05-03 17:29:39     Or copy and paste one of these URLs:
+    > 2023-05-03 17:29:39         http://083d9da0d714:8888/lab?token=686167f3cee298e578315d50990c397ffd09b75cb5705cf3
+    > 2023-05-03 17:29:39      or http://127.0.0.1:8888/lab?token=686167f3cee298e578315d50990c397ffd09b75cb5705cf3
+
+Click on the last line in the logs, enter Jupyter Hub in your brower and follow instructions in the notebooks/BigDataPipeline.ipynb
+
+# Other Info
+
 ## Expanding Docker Compose
 Add the following services to your `docker-compose.yml` to increase spark worker nodes:
 ```yml
@@ -93,23 +109,3 @@ services:
 ```
 
 
-## Spark Kubernetes deployment
-The BDE Spark images can also be used in a Kubernetes enviroment.
-
-To deploy a simple Spark standalone cluster issue
-
-`kubectl apply -f https://raw.githubusercontent.com/big-data-europe/docker-spark/master/k8s-spark-cluster.yaml`
-
-This will setup a Spark standalone cluster with one master and a worker on every available node using the default namespace and resources. The master is reachable in the same namespace at `spark://spark-master:7077`.
-It will also setup a headless service so spark clients can be reachable from the workers using hostname `spark-client`.
-
-Then to use `spark-shell` issue
-
-`kubectl run spark-base --rm -it --labels="app=spark-client" --image bde2020/spark-base:3.3.0-hadoop3.3 -- bash ./spark/bin/spark-shell --master spark://spark-master:7077 --conf spark.driver.host=spark-client`
-
-To use `spark-submit` issue for example
-
-`kubectl run spark-base --rm -it --labels="app=spark-client" --image bde2020/spark-base:3.3.0-hadoop3.3 -- bash ./spark/bin/spark-submit --class CLASS_TO_RUN --master spark://spark-master:7077 --deploy-mode client --conf spark.driver.host=spark-client URL_TO_YOUR_APP`
-
-You can use your own image packed with Spark and your application but when deployed it must be reachable from the workers.
-One way to achieve this is by creating a headless service for your pod and then use `--conf spark.driver.host=YOUR_HEADLESS_SERVICE` whenever you submit your application.
