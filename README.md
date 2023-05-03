@@ -7,8 +7,24 @@ This repository is directly forked and inspired from [Big Data Europe repositori
 Docker Compose containing:
 * [Apache Spark](https://spark.apache.org/) cluster running one Spark Master and multiple Spark workers
 * [Hadoop](https://hadoop.apache.org/) HDFS cluster
-* The [Apache Hive ™](https://hive.apache.org/) distributed, fault-tolerant data warehouse system.
-* The [Jupyter Lab service](https://jupyter.org/) to test PySpark jobs
+* [Apache Hive ™](https://hive.apache.org/) distributed, fault-tolerant data warehouse system.
+* [Jupyter Lab service](https://jupyter.org/) to test PySpark jobs
+* [Apache Airflow](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin) 
+
+This Docker-Compose contains Basic Airflow cluster configuration for CeleryExecutor with Redis and PostgreSQL.
+WARNING: This configuration is for local development. Do not use it in a production deployment.
+This configuration supports basic configuration using environment variables or an .env file
+The following variables are supported:
+
+* AIRFLOW_IMAGE_NAME - Docker image name used to run Airflow. Default: apache/airflow:2.6.0
+* AIRFLOW_UID  - User ID in Airflow containers Default: 50000
+* AIRFLOW_PROJ_DIR - Base path to which all the files will be volumed. Default: .
+
+Those configurations are useful mostly in case of standalone testing/running Airflow in test/try-out mode
+
+* _AIRFLOW_WWW_USER_USERNAME - Username for the administrator account (if requested). Default: airflow
+* _AIRFLOW_WWW_USER_PASSWORD - Password for the administrator account (if requested). Default: airflow
+* _PIP_ADDITIONAL_REQUIREMENTS - Additional PIP requirements to add when starting all containers. Use this option ONLY for quick checks. Installing requirements at container. startup is done EVERY TIME the service is started. A better way is to build a custom image or extend the official image as described in https://airflow.apache.org/docs/docker-stack/build.html. Default: ''
 
 ## Running Docker containers 
 
