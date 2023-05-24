@@ -10,11 +10,6 @@ Docker Compose containing:
 * [Apache Hive ™](https://hive.apache.org/) distributed, fault-tolerant data warehouse system.
 * [Jupyter Lab service](https://jupyter.org/) to test PySpark jobs
 
-# TODO: AGGIUNGERE DESCRIZIONE PER APACHE NIFI
-Add credit and explanation from this article
-https://medium.com/geekculture/host-a-fully-persisted-apache-nifi-service-with-docker-ffaa6a5f54a3
-
-
 ## Running Docker containers 
 
 To start the docker big data playground repository:
@@ -112,5 +107,3 @@ services:
     environment:
       - "SPARK_MASTER=spark://spark-master:7077"
 ```
-
-
