@@ -25,7 +25,7 @@ Copy a data file into the container:
 
 Log into the container and put the file into HDFS:
 
-    $ docker-compose exec spark-master bash
+    $ docker-compose exec namenode bash
     > hdfs dfs -mkdir /data
     > hdfs dfs -mkdir /data/openbeer
     > hdfs dfs -mkdir /data/openbeer/breweries
